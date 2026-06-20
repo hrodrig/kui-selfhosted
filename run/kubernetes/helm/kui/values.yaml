@@ -1,0 +1,86 @@
+kiko:
+  image:
+    repository: ghcr.io/hrodrig/kiko
+    tag: "v0.1.0"
+    pullPolicy: IfNotPresent
+  service:
+    port: 8080
+  env:
+    listen: ":8080"
+    publicUrl: "https://analytics.example.com"
+    logLevel: info
+    allowedHosts: ""
+    bufferFlushInterval: "10"
+    bufferCapacity: "4096"
+  database:
+    driver: sqlite
+    sqlitePath: /data/kiko.db
+    dsn: ""
+  persistence:
+    enabled: true
+    size: 2Gi
+    mountPath: /data
+  probes:
+    liveness:
+      path: /api/v1/healthz
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    readiness:
+      path: /api/v1/readyz
+      initialDelaySeconds: 3
+      periodSeconds: 5
+
+kui:
+  image:
+    repository: ghcr.io/hrodrig/kui
+    tag: "v0.1.0"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  env:
+    listen: ":3000"
+    logLevel: info
+    adminEmail: admin@localhost
+    sqlitePath: /data/kui.db
+  persistence:
+    enabled: true
+    size: 1Gi
+    mountPath: /data
+
+secrets:
+  create: true
+  existingSecret: ""
+  kikoApiKey: ""
+  kuiAdminPassword: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+resources:
+  kiko:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: "1"
+      memory: 256Mi
+  kui:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: "500m"
+      memory: 128Mi

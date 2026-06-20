@@ -1,0 +1,31 @@
+# Deny-all by default
+*
+.*
+
+# Allowlist: repository metadata
+!.gitignore
+!VERSION
+!LICENSE
+!README.md
+!AGENTS.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!SECURITY.md
+
+# GitHub Actions (future)
+!.github/
+!.github/workflows/
+!.github/workflows/**
+
+# Deployment tree
+!run/
+!run/**
+
+# Automation
+!Makefile
+
+# Generated noise
+.DS_Store
+*.db
+*.db-shm
+*.db-wal

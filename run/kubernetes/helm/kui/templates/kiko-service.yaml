@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kui-stack.kiko.fullname" . }}
+  labels:
+    {{- include "kui-stack.kiko.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.kiko.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kui-stack.kiko.selectorLabels" . | nindent 4 }}

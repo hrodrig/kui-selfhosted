@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kui-stack.kui.fullname" . }}
+  labels:
+    {{- include "kui-stack.kui.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "kui-stack.kui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kui-stack.kui.labels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: kui
+          image: {{ include "kui-stack.kui.image" . }}
+          imagePullPolicy: {{ .Values.kui.image.pullPolicy }}
+          args: ["serve"]
+          ports:
+            - name: http
+              containerPort: {{ .Values.kui.service.port }}
+          env:
+            - name: KUI_LISTEN
+              value: {{ .Values.kui.env.listen | quote }}
+            - name: KUI_LOG_LEVEL
+              value: {{ .Values.kui.env.logLevel | quote }}
+            - name: KUI_DATABASE_PATH
+              value: {{ .Values.kui.env.sqlitePath | quote }}
+            - name: KUI_ADMIN_EMAIL
+              value: {{ .Values.kui.env.adminEmail | quote }}
+            - name: KIKO_URL
+              value: {{ printf "http://%s:%d" (include "kui-stack.kiko.serviceName" .) (int .Values.kiko.service.port) | quote }}
+            - name: KIKO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kui-stack.secretName" . }}
+                  key: KIKO_API_KEY
+            - name: KUI_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kui-stack.secretName" . }}
+                  key: KUI_ADMIN_PASSWORD
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.kui.persistence.enabled }}
+            - name: data
+              mountPath: {{ .Values.kui.persistence.mountPath }}
+            {{- end }}
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            {{- toYaml .Values.resources.kui | nindent 12 }}
+      volumes:
+        {{- if .Values.kui.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "kui-stack.kui.fullname" . }}-data
+        {{- end }}
+        - name: tmp
+          emptyDir: {}

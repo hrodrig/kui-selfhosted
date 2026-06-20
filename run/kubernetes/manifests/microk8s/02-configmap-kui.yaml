@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kui
+  namespace: kui
+  labels:
+    app.kubernetes.io/name: kui
+data:
+  KUI_LISTEN: ":3000"
+  KUI_LOG_LEVEL: "info"
+  KUI_DATABASE_PATH: "/data/kui.db"
+  KUI_ADMIN_EMAIL: "admin@localhost"
+  KIKO_URL: "http://kiko:8080"

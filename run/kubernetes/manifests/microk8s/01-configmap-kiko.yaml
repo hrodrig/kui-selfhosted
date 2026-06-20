@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiko
+  namespace: kui
+  labels:
+    app.kubernetes.io/name: kiko
+data:
+  KIKO_LISTEN: ":8080"
+  KIKO_PUBLIC_URL: "https://analytics.example.com"
+  KIKO_LOG_LEVEL: "info"
+  KIKO_DATABASE_DRIVER: "sqlite"
+  KIKO_DATABASE_PATH: "/data/kiko.db"
+  KIKO_BUFFER_FLUSH_INTERVAL: "10"
+  KIKO_BUFFER_CAPACITY: "4096"
+  KIKO_ALLOWED_HOSTS: ""

@@ -1,0 +1,18 @@
+apiVersion: v2
+name: kui
+description: kiko analytics collector + kui dashboard (stack)
+type: application
+version: 0.1.0
+appVersion: "v0.1.0"
+keywords:
+  - analytics
+  - dashboard
+  - privacy
+home: https://github.com/hrodrig/kui
+sources:
+  - https://github.com/hrodrig/kui
+  - https://github.com/hrodrig/kiko
+maintainers:
+  - name: Hermes Rodriguez
+    url: https://github.com/hrodrig/kui
+kubeVersion: ">=1.28.0"

@@ -1,0 +1,47 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  kiko:
+    image: ${KIKO_IMAGE:-ghcr.io/hrodrig/kiko:${KIKO_VERSION:-v0.1.0}}
+    container_name: kiko
+    restart: unless-stopped
+    ports:
+      - "${KIKO_HOST_PORT:-8080}:8080"
+    environment:
+      KIKO_LISTEN: ${KIKO_LISTEN:-:8080}
+      KIKO_PUBLIC_URL: ${KIKO_PUBLIC_URL:-http://localhost:8080}
+      KIKO_LOG_LEVEL: ${KIKO_LOG_LEVEL:-info}
+      KIKO_DATABASE_DRIVER: ${KIKO_DATABASE_DRIVER:-sqlite}
+      KIKO_DATABASE_PATH: ${KIKO_DATABASE_PATH:-/data/kiko.db}
+      KIKO_DATABASE_DSN: ${KIKO_DATABASE_DSN:-}
+      KIKO_BUFFER_FLUSH_INTERVAL: ${KIKO_BUFFER_FLUSH_INTERVAL:-10}
+      KIKO_BUFFER_CAPACITY: ${KIKO_BUFFER_CAPACITY:-4096}
+      KIKO_ALLOWED_HOSTS: ${KIKO_ALLOWED_HOSTS:-}
+      KIKO_API_KEY: ${KIKO_API_KEY:?set KIKO_API_KEY in .env}
+    volumes:
+      - "${STACK_HOST_DATA:?set STACK_HOST_DATA in .env}/kiko-data:/data"
+    logging: *default-logging
+
+  kui:
+    image: ${KUI_IMAGE:-ghcr.io/hrodrig/kui:${KUI_VERSION:-v0.1.0}}
+    container_name: kui
+    restart: unless-stopped
+    ports:
+      - "${KUI_HOST_PORT:-3000}:3000"
+    environment:
+      KUI_LISTEN: ${KUI_LISTEN:-:3000}
+      KUI_LOG_LEVEL: ${KUI_LOG_LEVEL:-info}
+      KUI_DATABASE_PATH: ${KUI_DATABASE_PATH:-/data/kui.db}
+      KUI_ADMIN_EMAIL: ${KUI_ADMIN_EMAIL:-admin@localhost}
+      KUI_ADMIN_PASSWORD: ${KUI_ADMIN_PASSWORD:?set KUI_ADMIN_PASSWORD in .env}
+      KIKO_URL: http://kiko:8080
+      KIKO_API_KEY: ${KIKO_API_KEY:?set KIKO_API_KEY in .env}
+    volumes:
+      - "${STACK_HOST_DATA:?set STACK_HOST_DATA in .env}/kui-data:/data"
+    depends_on:
+      - kiko
+    logging: *default-logging

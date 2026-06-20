@@ -1,0 +1,20 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Release: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+kiko (collector):
+  Service: {{ include "kui-stack.kiko.fullname" . }}:{{ .Values.kiko.service.port }}
+  Probes: GET /api/v1/healthz, GET /api/v1/readyz
+
+kui (dashboard):
+  Service: {{ include "kui-stack.kui.fullname" . }}:{{ .Values.kui.service.port }}
+
+Sign in with admin email: {{ .Values.kui.env.adminEmail }}
+Password: value of secrets.kuiAdminPassword (first boot seeds admin)
+
+Port-forward dashboard:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "kui-stack.kui.fullname" . }} 3000:{{ .Values.kui.service.port }}
+
+Tracking script (set KIKO_PUBLIC_URL in values):
+  <script defer src="{{ .Values.kiko.env.publicUrl }}/kiko.js"></script>

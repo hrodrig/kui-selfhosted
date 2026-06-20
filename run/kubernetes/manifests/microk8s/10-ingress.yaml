@@ -1,0 +1,32 @@
+# Optional — MicroK8s Traefik ingress. Edit hosts and apply separately:
+#   kubectl apply -f 10-ingress.yaml
+#
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: kui-stack
+#   namespace: kui
+#   annotations:
+#     kubernetes.io/ingress.class: public
+# spec:
+#   rules:
+#     - host: analytics.example.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: kiko
+#                 port:
+#                   number: 8080
+#     - host: dashboard.example.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: kui
+#                 port:
+#                   number: 3000
