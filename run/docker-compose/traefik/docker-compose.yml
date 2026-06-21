@@ -1,13 +1,16 @@
 # Production-oriented stack: Traefik (TLS + HTTP→HTTPS) + kiko + kui (no host ports).
 #
+# kiko and kui run on separate subdomains, each with its own TLS cert
+# via Let's Encrypt. Configure KIKO_HOSTNAME and KUI_HOSTNAME in .env.
+#
 # Prerequisites:
-#   - DNS A/AAAA for STACK_HOSTNAME → this host's public IP
+#   - DNS A/AAAA for both hostnames → this host's public IP
 #   - Ports 80 and 443 reachable from the internet (80 for redirect + ACME HTTP-01)
 #
 # Usage (from repository root):
 #   export STACK_HOST_DATA=/home/kui/stack-data
 #   mkdir -p "$STACK_HOST_DATA/kiko-data" "$STACK_HOST_DATA/kui-data"
-#   cp run/common/.env.example "${STACK_HOST_DATA}/.env"   # edit; set STACK_HOST_DATA inside the file
+#   cp run/common/.env.example "${STACK_HOST_DATA}/.env"   # edit
 #   docker compose --env-file "${STACK_HOST_DATA}/.env" \
 #     -f run/docker-compose/traefik/docker-compose.yml up -d
 #
@@ -78,7 +81,7 @@ services:
     user: "65532:65532"
     environment:
       KIKO_LISTEN: ":8080"
-      KIKO_PUBLIC_URL: https://${STACK_HOSTNAME:?set STACK_HOSTNAME FQDN}
+      KIKO_PUBLIC_URL: https://${KIKO_HOSTNAME:?set KIKO_HOSTNAME}
       KIKO_LOG_LEVEL: ${KIKO_LOG_LEVEL:-info}
       KIKO_DATABASE_DRIVER: ${KIKO_DATABASE_DRIVER:-sqlite}
       KIKO_DATABASE_PATH: ${KIKO_DATABASE_PATH:-/data/kiko.db}
@@ -106,14 +109,15 @@ services:
       - traefik.http.middlewares.kiko-ratelimit.ratelimit.average=100
       - traefik.http.middlewares.kiko-ratelimit.ratelimit.period=1s
       - traefik.http.middlewares.kiko-ratelimit.ratelimit.burst=200
-      # Security headers middleware.
+      # Security headers middleware (shared with kui).
       - traefik.http.middlewares.kiko-hdr.headers.frameDeny=true
       - traefik.http.middlewares.kiko-hdr.headers.browserXssFilter=true
       - traefik.http.middlewares.kiko-hdr.headers.contentTypeNosniff=true
       - traefik.http.middlewares.kiko-hdr.headers.stsSeconds=31536000
       - traefik.http.middlewares.kiko-hdr.headers.stsIncludeSubdomains=false
-      # Kiko router: tracking endpoints (/hit, /hit.gif, /kiko.js) and public API.
-      - traefik.http.routers.kiko.rule=Host(`${STACK_HOSTNAME:?set STACK_HOSTNAME FQDN}`) && PathPrefix(`/hit`,`/hit.gif`,`/kiko.js`,`/api/v1/healthz`,`/api/v1/readyz`,`/api/v1/version`)
+      # Kiko router: tracking and public API on its own subdomain.
+      - traefik.http.routers.kiko.rule=Host(`${KIKO_HOSTNAME:?set KIKO_HOSTNAME}`)
+      - traefik.http.routers.kiko.priority=100
       - traefik.http.routers.kiko.entrypoints=websecure
       - traefik.http.routers.kiko.tls=true
       - traefik.http.routers.kiko.tls.certresolver=le
@@ -148,8 +152,9 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=kui_edge
-      # Kui router: dashboard UI and admin endpoints.
-      - traefik.http.routers.kui.rule=Host(`${STACK_HOSTNAME:?set STACK_HOSTNAME FQDN}`) && !PathPrefix(`/hit`,`/hit.gif`,`/kiko.js`,`/api/v1/healthz`,`/api/v1/readyz`)
+      # Kui router: dashboard on its own subdomain (separate from kiko).
+      - traefik.http.routers.kui.rule=Host(`${KUI_HOSTNAME:?set KUI_HOSTNAME}`)
+      - traefik.http.routers.kui.priority=100
       - traefik.http.routers.kui.entrypoints=websecure
       - traefik.http.routers.kui.tls=true
       - traefik.http.routers.kui.tls.certresolver=le

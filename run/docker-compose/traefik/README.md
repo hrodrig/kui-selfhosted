@@ -2,7 +2,12 @@
 
 ← [Back to run/README](../../README.md).
 
-**Traefik** terminates HTTPS (Let's Encrypt) and routes to **kiko** (tracking) and **kui** (dashboard) on the **`kui_edge`** Docker network. No host ports are published for kiko or kui; only **80** and **443** for Traefik.
+**Traefik** terminates HTTPS (Let's Encrypt) and routes to **kiko** and **kui** on separate subdomains. Each service gets its own TLS certificate. No host ports are published for kiko or kui; only **80** and **443** for Traefik.
+
+| Service | Hostname |
+|---------|----------|
+| kiko (tracking) | `https://<KIKO_HOSTNAME>` — `/hit`, `/kiko.js`, `/api/v1/stats/*` |
+| kui (dashboard) | `https://<KUI_HOSTNAME>` — login, charts, admin |
 
 Compose **project** `kui-edge` (containers `kui-edge-traefik-1`, `kui-edge-kiko-1`, `kui-edge-kui-1`).
 
@@ -14,8 +19,8 @@ From the **repository root**:
 export STACK_HOST_DATA=/home/kui/stack-data
 mkdir -p "$STACK_HOST_DATA/kiko-data" "$STACK_HOST_DATA/kui-data"
 cp run/common/.env.example "${STACK_HOST_DATA}/.env"
-# Set STACK_HOSTNAME, ACME_EMAIL, KIKO_VISITOR_SALT, KIKO_API_KEY,
-# KUI_ADMIN_PASSWORD, and STACK_HOST_DATA (same absolute path)
+# Set KIKO_HOSTNAME, KUI_HOSTNAME, ACME_EMAIL, KIKO_VISITOR_SALT,
+# KIKO_API_KEY, KUI_ADMIN_PASSWORD, and STACK_HOST_DATA
 
 docker compose --env-file "${STACK_HOST_DATA}/.env" \
   -f run/docker-compose/traefik/docker-compose.yml up -d
@@ -25,20 +30,13 @@ Or use the helper script (recommended):
 
 ```bash
 ./run/scripts/compose-stack.sh up          # full stack
-./run/scripts/compose-stack.sh up kiko     # collector only (no TLS cert request)
+./run/scripts/compose-stack.sh up kiko     # collector only
 ./run/scripts/compose-stack.sh up kiko kui # apps only, keep Traefik running
 ./run/scripts/compose-stack.sh down        # stop everything
 ./run/scripts/compose-stack.sh logs kiko   # follow kiko logs
 ```
 
-Ensure DNS for `STACK_HOSTNAME` points to this host and **80/443** are reachable for ACME.
-
-**Routing:**
-
-| Path | Service |
-|------|---------|
-| `/hit`, `/hit.gif`, `/kiko.js`, `/api/v1/healthz`, `/api/v1/readyz`, `/api/v1/version` | kiko (tracking) |
-| Everything else | kui (dashboard) |
+Ensure DNS for both `KIKO_HOSTNAME` and `KUI_HOSTNAME` points to this host and **80/443** are reachable for ACME.
 
 **Exec / logs** (service names):
 
@@ -51,7 +49,7 @@ docker compose --env-file "${STACK_HOST_DATA}/.env" \
   -f run/docker-compose/traefik/docker-compose.yml logs -f kui
 ```
 
-**kiko.js** will be served at `https://<STACK_HOSTNAME>/kiko.js`. The dashboard will be at `https://<STACK_HOSTNAME>/`.
+**kiko.js** will be served at `https://<KIKO_HOSTNAME>/kiko.js`. The dashboard will be at `https://<KUI_HOSTNAME>/`.
 
 ---
 
