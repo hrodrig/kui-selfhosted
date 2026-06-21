@@ -4,6 +4,14 @@ All notable changes to **kui-selfhosted** (deployment manifests) are documented 
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.6] - 2026-06-21
+
+### Changed
+
+- **Helm chart** — bump `version` 0.1.0 → 0.1.1, `appVersion` v0.1.0 → v0.4.0.
+- **Helm values** — kiko.image.tag v0.1.0 → v0.4.0.
+- **README** — fix ingress relative path, update stale image tag examples.
+
 ## [0.1.5] - 2026-06-21
 
 ### Changed
