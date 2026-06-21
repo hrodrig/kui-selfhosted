@@ -21,6 +21,16 @@ docker compose --env-file "${STACK_HOST_DATA}/.env" \
   -f run/docker-compose/traefik/docker-compose.yml up -d
 ```
 
+Or use the helper script (recommended):
+
+```bash
+./run/scripts/compose-stack.sh up          # full stack
+./run/scripts/compose-stack.sh up kiko     # collector only (no TLS cert request)
+./run/scripts/compose-stack.sh up kiko kui # apps only, keep Traefik running
+./run/scripts/compose-stack.sh down        # stop everything
+./run/scripts/compose-stack.sh logs kiko   # follow kiko logs
+```
+
 Ensure DNS for `STACK_HOSTNAME` points to this host and **80/443** are reachable for ACME.
 
 **Routing:**
