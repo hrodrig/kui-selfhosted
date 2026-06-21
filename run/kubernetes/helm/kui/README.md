@@ -30,4 +30,4 @@ This chart does not ship Ingress by default. Point two hosts at the Services:
 - **analytics.example.com** → kiko Service (tracking)
 - **dashboard.example.com** → kui Service (UI)
 
-See MicroK8s example: [`../manifests/microk8s/10-ingress.yaml`](../manifests/microk8s/10-ingress.yaml).
+See MicroK8s example: [`../../manifests/microk8s/10-ingress.yaml`](../../manifests/microk8s/10-ingress.yaml).

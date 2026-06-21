@@ -70,8 +70,8 @@ helm upgrade --install kui run/kubernetes/helm/kui \
   --namespace kui --create-namespace \
   --set secrets.kikoApiKey='your-api-key' \
   --set secrets.kuiAdminPassword='your-admin-password' \
-  --set kiko.image.tag=v0.1.0 \
-  --set kui.image.tag=v0.1.0 \
+  --set kiko.image.tag=v0.4.0 \
+  --set kui.image.tag=v0.3.1 \
   --set kiko.env.publicUrl=https://analytics.example.com
 ```
 
