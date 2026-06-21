@@ -39,7 +39,7 @@ volumes:
 
 services:
   traefik:
-    image: traefik:v3.6.17
+    image: traefik:v3.7.5
     restart: always
     security_opt:
       - no-new-privileges:true

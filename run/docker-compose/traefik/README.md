@@ -11,7 +11,7 @@
 
 Compose **project** `kui-edge` (containers `kui-edge-traefik-1`, `kui-edge-kiko-1`, `kui-edge-kui-1`).
 
-**Traefik image:** pinned in [`docker-compose.yml`](docker-compose.yml) (currently **`traefik:v3.6.17`**, 3.6.x line). Stay on **≥ v3.6.14** for published security fixes.
+**Traefik image:** pinned in [`docker-compose.yml`](docker-compose.yml) (currently **`traefik:v3.7.5`**, 3.7.x line). Stay on **≥ v3.6.14** for published security fixes.
 
 From the **repository root**:
 
