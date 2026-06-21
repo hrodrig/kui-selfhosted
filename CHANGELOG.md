@@ -4,6 +4,12 @@ All notable changes to **kui-selfhosted** (deployment manifests) are documented 
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.5] - 2026-06-21
+
+### Changed
+
+- **Traefik image** — bump `v3.6.17` → `v3.7.5`.
+
 ## [0.1.4] - 2026-06-20
 
 ### Fixed
