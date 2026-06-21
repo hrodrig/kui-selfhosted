@@ -8,6 +8,8 @@
 
 Deployment manifests for **[kui](https://github.com/hrodrig/kui)** + **[kiko](https://github.com/hrodrig/kiko)** — privacy-first web analytics with a self-hosted dashboard. Compose, Helm, and **MicroK8s** raw YAML.
 
+[![kui-selfhosted hero](/assets/kui-selfhosted-hero.svg)](/assets/kui-selfhosted-hero.svg)
+
 **Application sources:** [kui](https://github.com/hrodrig/kui) (UI + auth) · [kiko](https://github.com/hrodrig/kiko) (collector + stats API).
 
 > For **VPS best practices** (security hardening, firewall, Docker Compose setup), see **[gghstats-selfhosted VPS recommendations](https://github.com/hrodrig/gghstats-selfhosted/tree/main/run/vps-recommended)**.

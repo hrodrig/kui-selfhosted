@@ -25,6 +25,10 @@
 # Automation
 !Makefile
 
+# Assets
+!assets/
+!assets/**
+
 # Generated noise
 .DS_Store
 *.db
