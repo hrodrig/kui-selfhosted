@@ -9,6 +9,8 @@ Deployment manifests for **[kui](https://github.com/hrodrig/kui)** + **[kiko](ht
 
 **Application sources:** [kui](https://github.com/hrodrig/kui) (UI + auth) · [kiko](https://github.com/hrodrig/kiko) (collector + stats API).
 
+> For **VPS best practices** (security hardening, firewall, Docker Compose setup), see **[gghstats-selfhosted VPS recommendations](https://github.com/hrodrig/gghstats-selfhosted/tree/main/run/vps-recommended)**.
+
 **Releases:** Root **`VERSION`** and Git tags **`v<semver>`** on **`main`** name repository snapshots. Work in progress lands on **`develop`** first.
 
 ---
