@@ -1,13 +1,16 @@
 # kui-selfhosted
 
-[![Version](https://img.shields.io/badge/version-0.1.1-blue)](https://github.com/hrodrig/kui-selfhosted/releases)
+[![Version](https://img.shields.io/badge/version-0.1.2-blue)](https://github.com/hrodrig/kui-selfhosted/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![kui app](https://img.shields.io/badge/app-hrodrig%2Fkui-181717?logo=github)](https://github.com/hrodrig/kui)
 [![kiko app](https://img.shields.io/badge/collector-hrodrig%2Fkiko-181717?logo=github)](https://github.com/hrodrig/kiko)
+[![gghstats clones](https://gghstats.hermesrodriguez.com/api/v1/badge/hrodrig/kui-selfhosted?metric=clones)](https://gghstats.hermesrodriguez.com/hrodrig/kui-selfhosted)
 
 Deployment manifests for **[kui](https://github.com/hrodrig/kui)** + **[kiko](https://github.com/hrodrig/kiko)** — privacy-first web analytics with a self-hosted dashboard. Compose, Helm, and **MicroK8s** raw YAML.
 
 **Application sources:** [kui](https://github.com/hrodrig/kui) (UI + auth) · [kiko](https://github.com/hrodrig/kiko) (collector + stats API).
+
+> For **VPS best practices** (security hardening, firewall, Docker Compose setup), see **[gghstats-selfhosted VPS recommendations](https://github.com/hrodrig/gghstats-selfhosted/tree/main/run/vps-recommended)**.
 
 **Releases:** Root **`VERSION`** and Git tags **`v<semver>`** on **`main`** name repository snapshots. Work in progress lands on **`develop`** first.
 

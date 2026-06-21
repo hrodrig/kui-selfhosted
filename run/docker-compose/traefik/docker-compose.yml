@@ -1,0 +1,160 @@
+# Production-oriented stack: Traefik (TLS + HTTP→HTTPS) + kiko + kui (no host ports).
+#
+# Prerequisites:
+#   - DNS A/AAAA for STACK_HOSTNAME → this host's public IP
+#   - Ports 80 and 443 reachable from the internet (80 for redirect + ACME HTTP-01)
+#
+# Usage (from repository root):
+#   export STACK_HOST_DATA=/home/kui/stack-data
+#   mkdir -p "$STACK_HOST_DATA/kiko-data" "$STACK_HOST_DATA/kui-data"
+#   cp run/common/.env.example "${STACK_HOST_DATA}/.env"   # edit; set STACK_HOST_DATA inside the file
+#   docker compose --env-file "${STACK_HOST_DATA}/.env" \
+#     -f run/docker-compose/traefik/docker-compose.yml up -d
+#
+# Local dev without Traefik: use run/docker-compose/minimal/docker-compose.yml instead.
+#
+# Traefik needs a recent image for Docker Engine 28+ / 29+ (minimum API 1.40+); see traefik:v3.6.1+.
+# Pin >= v3.6.14 for security advisories (e.g. ForwardAuth header sanitization).
+#
+# Log rotation (json-file driver): caps disk use per container.
+
+name: kui-edge
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+networks:
+  edge:
+    name: kui_edge
+    driver: bridge
+
+volumes:
+  traefik_letsencrypt:
+
+services:
+  traefik:
+    image: traefik:v3.6.17
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - --log.level=INFO
+      - --accesslog=true
+      - --api.dashboard=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=kui_edge
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      # Redirect all HTTP to HTTPS (ACME HTTP-01 paths are handled before redirect).
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL:?set ACME_EMAIL for Let's Encrypt}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_letsencrypt:/letsencrypt
+    networks:
+      - edge
+    logging: *default-logging
+
+  kiko:
+    image: ${KIKO_IMAGE:-ghcr.io/hrodrig/kiko:${KIKO_VERSION:-v0.4.0}}
+    restart: always
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    user: "65532:65532"
+    environment:
+      KIKO_LISTEN: ":8080"
+      KIKO_PUBLIC_URL: https://${STACK_HOSTNAME:?set STACK_HOSTNAME FQDN}
+      KIKO_LOG_LEVEL: ${KIKO_LOG_LEVEL:-info}
+      KIKO_DATABASE_DRIVER: ${KIKO_DATABASE_DRIVER:-sqlite}
+      KIKO_DATABASE_PATH: ${KIKO_DATABASE_PATH:-/data/kiko.db}
+      KIKO_DATABASE_DSN: ${KIKO_DATABASE_DSN:-}
+      KIKO_BUFFER_FLUSH_INTERVAL: ${KIKO_BUFFER_FLUSH_INTERVAL:-10}
+      KIKO_BUFFER_CAPACITY: ${KIKO_BUFFER_CAPACITY:-4096}
+      KIKO_ALLOWED_HOSTS: ${KIKO_ALLOWED_HOSTS:-}
+      KIKO_FILTER_TRUST_PROXY: "true"
+      KIKO_FILTER_BLOCK_BOTS: "true"
+      KIKO_FILTER_BLOCK_PREFETCH: "true"
+      KIKO_FILTER_BLOCK_REFERRER_SPAM: "true"
+      KIKO_RATE_LIMIT_ENABLED: "true"
+      KIKO_RATE_LIMIT_REQUESTS_PER_SEC: "100"
+      KIKO_RATE_LIMIT_BURST: "200"
+      KIKO_VISITOR_SALT: ${KIKO_VISITOR_SALT:?set KIKO_VISITOR_SALT}
+      KIKO_API_KEY: ${KIKO_API_KEY:?set KIKO_API_KEY}
+    volumes:
+      - ${STACK_HOST_DATA:?set STACK_HOST_DATA in .env}/kiko-data:/data
+    networks:
+      - edge
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=kui_edge
+      # Edge rate limit middleware (defence-in-depth).
+      - traefik.http.middlewares.kiko-ratelimit.ratelimit.average=100
+      - traefik.http.middlewares.kiko-ratelimit.ratelimit.period=1s
+      - traefik.http.middlewares.kiko-ratelimit.ratelimit.burst=200
+      # Security headers middleware.
+      - traefik.http.middlewares.kiko-hdr.headers.frameDeny=true
+      - traefik.http.middlewares.kiko-hdr.headers.browserXssFilter=true
+      - traefik.http.middlewares.kiko-hdr.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.kiko-hdr.headers.stsSeconds=31536000
+      - traefik.http.middlewares.kiko-hdr.headers.stsIncludeSubdomains=false
+      # Kiko router: tracking endpoints (/hit, /hit.gif, /kiko.js) and public API.
+      - traefik.http.routers.kiko.rule=Host(`${STACK_HOSTNAME:?set STACK_HOSTNAME FQDN}`) && PathPrefix(`/hit`,`/hit.gif`,`/kiko.js`,`/api/v1/healthz`,`/api/v1/readyz`,`/api/v1/version`)
+      - traefik.http.routers.kiko.entrypoints=websecure
+      - traefik.http.routers.kiko.tls=true
+      - traefik.http.routers.kiko.tls.certresolver=le
+      - traefik.http.routers.kiko.middlewares=kiko-ratelimit,kiko-hdr
+      - traefik.http.services.kiko.loadbalancer.server.port=8080
+    logging: *default-logging
+
+  kui:
+    image: ${KUI_IMAGE:-ghcr.io/hrodrig/kui:${KUI_VERSION:-v0.3.1}}
+    restart: always
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    user: "65532:65532"
+    environment:
+      KUI_LISTEN: ":3000"
+      KUI_LOG_LEVEL: ${KUI_LOG_LEVEL:-info}
+      KUI_DATABASE_PATH: ${KUI_DATABASE_PATH:-/data/kui.db}
+      KUI_ADMIN_EMAIL: ${KUI_ADMIN_EMAIL:-admin@localhost}
+      KUI_ADMIN_PASSWORD: ${KUI_ADMIN_PASSWORD:?set KUI_ADMIN_PASSWORD}
+      KUI_SESSION_SECURE: "true"
+      KIKO_URL: http://kiko:8080
+      KIKO_API_KEY: ${KIKO_API_KEY:?set KIKO_API_KEY}
+    volumes:
+      - ${STACK_HOST_DATA:?set STACK_HOST_DATA in .env}/kui-data:/data
+    networks:
+      - edge
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=kui_edge
+      # Kui router: dashboard UI and admin endpoints.
+      - traefik.http.routers.kui.rule=Host(`${STACK_HOSTNAME:?set STACK_HOSTNAME FQDN}`) && !PathPrefix(`/hit`,`/hit.gif`,`/kiko.js`,`/api/v1/healthz`,`/api/v1/readyz`)
+      - traefik.http.routers.kui.entrypoints=websecure
+      - traefik.http.routers.kui.tls=true
+      - traefik.http.routers.kui.tls.certresolver=le
+      - traefik.http.routers.kui.middlewares=kiko-hdr
+      - traefik.http.services.kui.loadbalancer.server.port=3000
+    depends_on:
+      - kiko
+    logging: *default-logging

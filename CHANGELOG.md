@@ -4,6 +4,21 @@ All notable changes to **kui-selfhosted** (deployment manifests) are documented 
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.2] - 2026-06-20
+
+### Added
+
+- **Traefik compose stack** — production `docker-compose/traefik/` with TLS termination
+  (Let's Encrypt) for kiko + kui.
+- **`compose-stack.sh` helper** — start/stop individual services without restarting Traefik,
+  avoiding unnecessary TLS cert requests.
+- **gghstats badge** in README (clone metrics).
+
+### Changed
+
+- **Default image versions** — `KIKO_VERSION` → v0.4.0, `KUI_VERSION` → v0.3.1
+  in `.env.example`.
+
 ## [0.1.1] - 2026-06-20
 
 ### Added
