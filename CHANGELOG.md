@@ -4,6 +4,14 @@ All notable changes to **kui-selfhosted** (deployment manifests) are documented 
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.3] - 2026-06-20
+
+### Changed
+
+- **`.env.example`** — add `STACK_HOSTNAME`, `ACME_EMAIL`, `KIKO_VISITOR_SALT`
+  entries required by the Traefik compose stack. Document both minimal and
+  Traefik compose usage in the header.
+
 ## [0.1.2] - 2026-06-20
 
 ### Added
