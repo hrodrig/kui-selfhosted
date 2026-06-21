@@ -54,6 +54,18 @@ spec:
             {{- end }}
             - name: tmp
               mountPath: /tmp
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.kui.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.kui.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.kui.probes.liveness.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.kui.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.kui.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.kui.probes.readiness.periodSeconds }}
           resources:
             {{- toYaml .Values.resources.kui | nindent 12 }}
       volumes:

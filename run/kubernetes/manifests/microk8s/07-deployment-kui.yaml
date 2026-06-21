@@ -24,7 +24,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: kui
-          image: ghcr.io/hrodrig/kui:v0.1.0
+          image: ghcr.io/hrodrig/kui:v0.3.1
           imagePullPolicy: IfNotPresent
           args: ["serve"]
           ports:
@@ -54,6 +54,18 @@ spec:
               mountPath: /data
             - name: tmp
               mountPath: /tmp
+          livenessProbe:
+            httpGet:
+              path: /api/v1/healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/readyz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
           resources:
             requests:
               cpu: 50m

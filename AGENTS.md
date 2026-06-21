@@ -7,6 +7,6 @@
 - **`KIKO_VERSION`** / **`KUI_VERSION`** in **`${STACK_HOST_DATA}/.env`**: pin **application** OCI images — align with upstream releases; not the same as this repo’s **`VERSION`**.
 - **This repo** has no Go tests; **`make release-check`** means **`helm lint`**, **`helm template`** + **kubeconform**, and **`docker compose … config`** for **minimal** (set **`STACK_HOST_DATA`**, **`KIKO_API_KEY`**, **`KUI_ADMIN_PASSWORD`**). Requires **helm**, **kubeconform**, and **docker** on **`PATH`**.
 - Keep **`run/`** paths, **`STACK_HOST_DATA`**, and **`${STACK_HOST_DATA}/.env`** documentation consistent across README files (always **`--env-file`** from the clone root).
-- **kiko probes:** liveness **`GET /api/v1/healthz`**, readiness **`GET /api/v1/readyz`**.
+- **kiko probes:** liveness **`GET /api/v1/healthz`**, readiness **`GET /api/v1/readyz`**. **kui probes:** liveness **`GET /api/v1/healthz`**, readiness **`GET /api/v1/readyz`** (kui now exposes both).
 - **Secrets:** **`KIKO_API_KEY`** shared between kiko stats API and kui client; **`KUI_ADMIN_PASSWORD`** seeds kui admin. Never expose API key to browsers.
 - **kiko-only** stacks live in **[kiko-selfhosted](https://github.com/hrodrig/kiko-selfhosted)**; this repo always documents **kiko + kui** together.

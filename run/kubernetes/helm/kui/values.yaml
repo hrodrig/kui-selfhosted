@@ -18,7 +18,7 @@ kiko:
     dsn: ""
   persistence:
     enabled: true
-    size: 2Gi
+    size: 24Gi
     mountPath: /data
   probes:
     liveness:
@@ -33,7 +33,7 @@ kiko:
 kui:
   image:
     repository: ghcr.io/hrodrig/kui
-    tag: "v0.1.0"
+    tag: "v0.3.1"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -43,6 +43,15 @@ kui:
     logLevel: info
     adminEmail: admin@localhost
     sqlitePath: /data/kui.db
+  probes:
+    liveness:
+      path: /api/v1/healthz
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    readiness:
+      path: /api/v1/readyz
+      initialDelaySeconds: 3
+      periodSeconds: 5
   persistence:
     enabled: true
     size: 1Gi
