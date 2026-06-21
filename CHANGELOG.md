@@ -4,6 +4,13 @@ All notable changes to **kui-selfhosted** (deployment manifests) are documented 
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.4] - 2026-06-20
+
+### Fixed
+
+- **Traefik routing** — use separate `KIKO_HOSTNAME` and `KUI_HOSTNAME`
+  for kiko and kui subdomains instead of a single shared hostname.
+
 ## [0.1.3] - 2026-06-20
 
 ### Changed
