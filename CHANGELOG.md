@@ -8,13 +8,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- **Chart version** — bump `0.1.1` → `0.1.2`, `appVersion` v0.4.0 → v0.4.3.
-- **Helm values** — kiko.image.tag v0.4.0 → v0.4.3, kui.image.tag v0.3.1 → v0.3.2.
-- **Compose defaults** — `KIKO_VERSION=v0.4.3`, `KUI_VERSION=v0.3.2`.
-- **MicroK8s** — kui image tag v0.3.1 → v0.3.2.
+- **Chart version** — bump `0.1.2` → `0.1.3`, `appVersion` v0.4.3 → v0.4.4.
+- **Helm values** — kiko.image.tag v0.4.3 → v0.4.4.
+- **Compose defaults** — `KIKO_VERSION=v0.4.4`.
 - **README** — update helm example tags.
 
-## [0.1.6] - 2026-06-21
+## [0.1.7] - 2026-06-21
 
 ### Changed
 
