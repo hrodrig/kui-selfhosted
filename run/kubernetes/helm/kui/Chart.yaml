@@ -2,8 +2,8 @@ apiVersion: v2
 name: kui
 description: kiko analytics collector + kui dashboard (stack)
 type: application
-version: 0.1.2
-appVersion: "v0.4.3"
+version: 0.1.3
+appVersion: "v0.4.4"
 keywords:
   - analytics
   - dashboard
