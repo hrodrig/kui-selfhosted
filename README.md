@@ -1,6 +1,6 @@
 # kui-selfhosted
 
-[![Version](https://img.shields.io/badge/version-0.1.6-blue)](https://github.com/hrodrig/kui-selfhosted/releases)
+[![Version](https://img.shields.io/badge/version-0.1.7-blue)](https://github.com/hrodrig/kui-selfhosted/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![kui app](https://img.shields.io/badge/app-hrodrig%2Fkui-181717?logo=github)](https://github.com/hrodrig/kui)
 [![kiko app](https://img.shields.io/badge/collector-hrodrig%2Fkiko-181717?logo=github)](https://github.com/hrodrig/kiko)
@@ -70,8 +70,8 @@ helm upgrade --install kui run/kubernetes/helm/kui \
   --namespace kui --create-namespace \
   --set secrets.kikoApiKey='your-api-key' \
   --set secrets.kuiAdminPassword='your-admin-password' \
-  --set kiko.image.tag=v0.4.0 \
-  --set kui.image.tag=v0.3.1 \
+  --set kiko.image.tag=v0.4.3 \
+  --set kui.image.tag=v0.3.2 \
   --set kiko.env.publicUrl=https://analytics.example.com
 ```
 
