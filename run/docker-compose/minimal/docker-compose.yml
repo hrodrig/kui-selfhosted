@@ -6,7 +6,7 @@ x-logging: &default-logging
 
 services:
   kiko:
-    image: ${KIKO_IMAGE:-ghcr.io/hrodrig/kiko:${KIKO_VERSION:-v0.4.4}}
+    image: ${KIKO_IMAGE:-ghcr.io/hrodrig/kiko:${KIKO_VERSION:-v0.5.0}}
     container_name: kiko
     restart: unless-stopped
     ports:

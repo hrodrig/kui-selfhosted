@@ -4,6 +4,15 @@ All notable changes to **kui-selfhosted** (deployment manifests) are documented 
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.8] - 2026-06-23
+
+### Changed
+
+- **Chart version** — bump `0.1.3` → `0.1.4`, `appVersion` v0.4.4 → v0.5.0.
+- **Helm values** — kiko.image.tag v0.4.4 → v0.5.0.
+- **Compose defaults** — `KIKO_VERSION=v0.5.0` in `.env.example` and Compose files.
+- **README** — update Helm example tag to v0.5.0.
+
 ## [0.1.7] - 2026-06-21
 
 ### Changed
